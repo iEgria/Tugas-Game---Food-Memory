@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Memory</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500&display=swap">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body style="background-image: url('image/background.jpg');">
+    <div class="card card-body m-5 glass glass-2" style="height: 85vh;">
+        <div class="row">
+            <div class="col-12">
+                <div class="p-3">
+                    <div class="h1 yellowtails text-center p-3">
+                        New Game
+                    </div>
+                    <div class="d-grid gap-3">
+                        <button class="p-5 btn btn-lg btn-success glass" onclick="start_game(1, 6, 4, 8.5, 19)">
+                            <div class="h3 text-light fw-bold text-uppercase">
+                                Mudah
+                            </div>
+                            <div class="text-light">6 x 4</div>
+                        </button>
+                        <button class="p-5 btn btn-lg btn-warning glass" onclick="start_game(2, 12, 4, 7.5, 17)">
+                            <div class="h3 text-light fw-bold text-uppercase">
+                                Sedang
+                            </div>
+                            <div class="text-light">12 x 4</div>
+                        </button>
+                        <button class="p-5 btn btn-lg btn-danger glass" onclick="start_game(4, 16, 6, 5.5, 12)">
+                            <div class="h3 text-light fw-bold text-uppercase">
+                                Sulit
+                            </div>
+                            <div class="text-light">16 x 6</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script>
+        function start_game(lv, c, r, w, h) {
+            window.location.href = "play.html?lv=" + lv + "&c=" + c + "&r=" + r + "&w=" + w + "&h=" + h;
+        }
+    </script>
+</body>
+
+</html>

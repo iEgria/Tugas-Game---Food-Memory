@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Memory</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/animate.css/animate.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500&display=swap">
+    <link rel="stylesheet" href="css/custom.css">
+    <style>
+        .card-background {
+            background-image: url('image/card-background.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body style="background-image: url('image/background.jpg');">
+    <div class="p-3 m-5 glass glass-2" style="height: 85vh;">
+        <div id="board" style="display: none;">
+
+        </div>
+        <div id="start-game" class="d-flex justify-content-center p-5 mt-5">
+            <button class="glass btn-lg p-5 h1 mt-5" onclick="start_game()">Mulai Permainan</button>
+        </div>
+    </div>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script>
+        const basic_card = 24;
+        var urlParams = new URLSearchParams(window.location.search);
+        var lv = urlParams.get('lv');
+        var column = urlParams.get('c');
+        var row = urlParams.get('r');
+        var width = urlParams.get('w');
+        var height = urlParams.get('h');
+        var card_number = (lv * basic_card);
+        var card_pairs = {};
+        var card_used = {};
+        var card_image = {};
+        var card_image_temp = {};
+        var music_background = new Audio('audio/backsound.mp3');
+        var card_flip = new Audio('audio/card-flip.mp3');
+        var card_wrong = new Audio('audio/card-wrong.mp3');
+        var card_correct = new Audio('audio/card-correct.mp3');
+
+        music_background.loop = true;
+        music_background.volume = 0.2;
+
+        for (i = 1; i <= card_number / 2; i++) {
+            number = (Math.ceil(Math.random() * card_number));
+            while (card_used[number] != undefined) {
+                number = (Math.ceil(Math.random() * card_number));
+            }
+            card_used[number] = true;
+
+            pair = (Math.ceil(Math.random() * card_number));
+            while (card_used[pair] != undefined) {
+                pair = (Math.ceil(Math.random() * card_number));
+            }
+            card_used[pair] = true;
+
+            image = (Math.ceil(Math.random() * 48));
+            while (card_image_temp[image] != undefined) {
+                image = (Math.ceil(Math.random() * 48));
+            }
+            card_image_temp[image] = true;
+
+            card_pairs[number] = pair;
+            card_pairs[pair] = number;
+            card_image[number] = image;
+        }
+
+        for (i = 1; i <= 48; i++) {
+
+        }
+
+        html = '';
+        for (i = 1; i <= basic_card * lv; i++) {
+            if (i % column == 1) {
+                html += '<div class="d-flex justify-content-center">';
+            }
+            html += '<button class="m-1 btn btn-lg btn-dark animate__animated card-background" data-real-value="' + i + '" data-opened="false" data-match="false" onclick="reveal($(this))" style="width: ' + width + '%; height: ' + height + 'vh;"></button>';
+            if (i % column == 0) {
+                html += '</div>';
+            }
+        }
+        $('#board').html(html);
+
+        function reveal(form) {
+            if ($('button[data-opened="true"][data-match="false"]').length == 2) {
+                $('button[data-opened="true"][data-match="false"]').removeClass('animate__flipInY').addClass('animate__flipInX');
+                $('button[data-opened="true"][data-match="false"]').attr('data-opened', 'false');
+                $('button[data-opened="false"]').addClass('card-background');
+            }
+            form.attr('data-opened', 'true');
+            form.removeClass('animate__flipInX').addClass('animate__flipInY');
+            card_flip.play();
+            form.removeClass('card-background');
+
+            if (card_image[form.data('realValue')] == undefined) {
+                form.html('<img src="image/card/' + card_image[card_pairs[form.data('realValue')]] + '.png" style="width: 100%; height: 100%;">');
+            } else {
+                form.html('<img src="image/card/' + card_image[form.data('realValue')] + '.png" style="width: 100%; height: 100%;">');
+            }
+
+            if ($('button[data-opened="true"][data-match="false"]').length == 2) {
+                var temp_card = $($('button[data-opened="true"][data-match="false"]')[0]);
+                var temp_pair = $($('button[data-opened="true"][data-match="false"]')[1]);
+
+                if (card_pairs[temp_card.data('realValue')] === temp_pair.data('realValue')) {
+                    temp_card.attr('data-match', 'true');
+                    temp_pair.attr('data-match', 'true');
+                    temp_card.removeAttr('onclick');
+                    temp_pair.removeAttr('onclick');
+                    temp_card.addClass('btn-success').removeClass('btn-dark');
+                    temp_pair.addClass('btn-success').removeClass('btn-dark');
+                    card_correct.play();
+
+                    if ($('button[data-match="true"]').length == card_number) {
+                        alert('You win!');
+                    }
+                } else {
+                    setTimeout(function () {
+                        card_wrong.play();
+                        card_wrong.play();
+                        temp_card.attr('data-opened', 'false');
+                        temp_pair.attr('data-opened', 'false');
+                        temp_card.addClass('card-background');
+                        temp_pair.addClass('card-background');
+                        temp_card.html('');
+                        temp_pair.html('');
+                        temp_card.removeClass('animate__flipInY').addClass('animate__flipInX');
+                        temp_pair.removeClass('animate__flipInY').addClass('animate__flipInX');
+                    }, 1000);
+                }
+            }
+        }
+
+        function start_game() {
+            $('#board').show();
+            $('#start-game').hide();
+            music_background.play();
+        }
+    </script>
+</body>
+
+</html>
